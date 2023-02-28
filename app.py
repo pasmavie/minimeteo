@@ -33,9 +33,9 @@ def cycle_and_download(
         available_maptypes = [o.get_attribute('value') for o in maptype_dropdown.options]
         for mt in available_maptypes:
             selected_maptype_str = maptype_dropdown.first_selected_option.text.replace(' ', '')
-            save_path = DATA_DIR / data_name / selected_area_str / selected_maptype_str
-            if not save_path.exists():
-                os.makedirs(save_path)
+            save_dir = DATA_DIR / data_name / selected_area_str / selected_maptype_str
+            if not save_dir.exists():
+                os.makedirs(save_dir)
             # A simpler alternative to the code below exists: driver.find_element_by_id('zipfile').click()
             # but it doesn't allow to save the map names and times...
             time_dropdown = Select(driver.find_element_by_id('display-data'))
@@ -43,7 +43,7 @@ def cycle_and_download(
             for t in available_times:
                 time_dropdown.select_by_value(t)
                 selected_time_str = time_dropdown.first_selected_option.text.replace(' ', '')
-                save_path = save_path / f'{selected_area_str}_{selected_time_str}.png'
+                save_path = save_dir / f'{selected_area_str}_{selected_time_str}.png'
                 driver.save_screenshot(str(save_path.resolve()))
 
 
