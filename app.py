@@ -17,7 +17,11 @@ URLS = {
     'lowresolution':'https://www.lamma.rete.toscana.it/mare/modelli/vento-mare-hr.php?area=B',
 }
 
-def cycle_and_download(driver: webdriver.WebDriver, url: str, data_name: Optional[str]= None):
+def cycle_and_download(
+    driver: webdriver.chrome.webdriver.WebDriver,
+    url: str, 
+    data_name: Optional[str]= None
+):
     data_name = data_name or ''.join(e for e in url if e.isalnum())
     driver.get(url=url)
     area_dropdown = Select(driver.find_element_by_id('aree'))
@@ -30,7 +34,10 @@ def cycle_and_download(driver: webdriver.WebDriver, url: str, data_name: Optiona
         for mt in available_maptypes:
             selected_maptype_str = maptype_dropdown.first_selected_option.text.replace(' ', '')
             save_path = DATA_DIR / data_name / selected_area_str / selected_maptype_str
-            os.makedirs(save_path_dir, exist_ok=True)
+            if not save_path.exists():
+                os.makedirs(save_path)
+            # A simpler alternative to the code below exists: driver.find_element_by_id('zipfile').click()
+            # but it doesn't allow to save the map names and times...
             time_dropdown = Select(driver.find_element_by_id('display-data'))
             available_times = [o.get_attribute('value') for o in time_dropdown.options]
             for t in available_times:
@@ -43,5 +50,5 @@ def cycle_and_download(driver: webdriver.WebDriver, url: str, data_name: Optiona
 if __name__ == "__main__":
     driver = webdriver.Chrome(ChromeDriverManager().install())
     f = functools.partial(cycle_and_download, driver=driver)
-    for name, url in URLS.items():
-        f(url=url, data_name=)
+    for map_name, url in URLS.items():
+        f(url=url, data_name=map_name)
